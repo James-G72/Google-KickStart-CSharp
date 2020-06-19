@@ -7,30 +7,39 @@ using System.Collections.Generic; // Allows lists to be used. Important!
 
 namespace KickStart
 {
-    // This first class just holds all of the permutation logic that was formed seperately
-    class PermutationCalculator
+    // Then we handle the rest of the logic in a seperate solutions class
+    class Solution
     {
+        // Storage is the ultimate output vessel
+        //static List<int[]> storage = new List<int[]>();
         public static bool checker;
-        public static List<int[]> Permutations(int stacks, int height, int length)
+        public static List<string> tempStorage = new List<string>();
+
+        public static string[] Permutations(int stacks, int height, int length)
         {
             // We can ask permute to give us the different arrangements of a set of numbers
             // We need to pass in all options that would give us enough plates
-            // First we cycle through all of the possible stack numbers
             checker = true;
             int[] querey = new int[stacks];
             int remaining = length;
             int counter = 0;
-            // Finding the starting possition
+
+            string[] storage = new string[0];
+            // Finding the starting state of querey
             while (checker)
             {
                 // Checking if we can satisfy the problem within a single stack
                 if (height >= remaining)
                 {
+                    // If we can get all the plates from one stack
                     querey[counter] = remaining;
+                    // Set checker to false so we can exit the while loop
                     checker = false;
                 }
                 else
                 {
+                    // If we need more plates than are in a single stack then we take all from each until
+                    // we have satisfied the amount we need
                     querey[counter] = height;
                     remaining -= height;
                     counter++;
@@ -38,20 +47,21 @@ namespace KickStart
             }
             // We now have a starting combination and set checker back to true for the new loop
             checker = true;
-            // Regardless of this input method the variable can be put into the extractor to return a list of integer arrays
-            List<int[]> storage = new List<int[]>();
-            // Adding the first querey to our list of options
+            // Just using a list didn't work for some reason so we're gonna use a string array
+            Array.Resize(ref storage, storage.Length + 1);
+            storage[storage.Length - 1] = string.Join("", querey);
             int indexer = 1;
             while (checker)
             {
-                storage = Permute(querey,storage,0,stacks);
+                // Passing querey into the Permute function that shuffles it and adds it
+                Permute(querey, 0, querey.Length - 1, ref storage);
                 // Checking if the first value is the largest
                 if (querey[0] >= length - (stacks - 1))
                 {
                     querey[0]--;
                     querey[indexer]++;
                     indexer++;
-                    if (indexer > stacks-1)
+                    if (indexer > stacks - 1)
                     {
                         // If indexer exceeds stack then we want to go back to the first stack again
                         indexer = 0;
@@ -61,58 +71,45 @@ namespace KickStart
                 {
                     checker = false;
                 }
-
-                
-                
             }
-            
-
             return storage;
         }
 
-        private static List<int[]> Permute(int[] input_list, List<int[]> output, int l, int r)
+        public static void Permute(int[] input_list, int k, int m, ref string[] storage)
         {
-            if (l == r)
+            if (k == m)
             {
-                // I don't know if I need to check this or not but 
-                if (!output.Contains(input_list))
+                if (Array.IndexOf(storage, string.Join("", input_list)) == -1)
                 {
-                    output.Add(input_list);
-                    checker = true;
+                    Array.Resize(ref storage, storage.Length + 1);
+                    storage[storage.Length - 1] = string.Join("", input_list);
                 }
             }
             else
             {
-                for (int i = l; i < r; i++)
+                for (int i = k; i <= m; i++)
                 {
-                    input_list = Swapper(input_list, l, i);
-                    Permute(input_list, output, l + 1, r);
-                    input_list = Swapper(input_list, l, i);
+                    Swapper(ref input_list[k], ref input_list[i]);
+                    Permute(input_list, k + 1, m, ref storage);
+                    Swapper(ref input_list[k], ref input_list[i]);
                 }
             }
-            return output;
         }
 
-        public static int[] Swapper(int[] a, int i, int j)
+        private static void Swapper(ref int a, ref int b)
         {
-            char temp;
-            string str = string.Join("", a);
-            char[] charArray = str.ToCharArray();
-            temp = charArray[i];
-            charArray[i] = charArray[j];
-            charArray[j] = temp;
-            int[] Aint = Array.ConvertAll(charArray, c => (int)Char.GetNumericValue(c));
-            return Aint;
-        }
-    }
+            // If they both happen to be exactly the same then just save time and return
+            if (a == b) return;
 
-    // Then we handle the rest of the logic in a seperate solutions class
-    class Solution
-    {
+            var temp = a;
+            a = b;
+            b = temp;
+        }
+
         static void Main(string[] args)
         {
             int Cases = Int32.Parse(Console.ReadLine());
-            for (int case_ = 1; case_ < Cases+1; case_++)
+            for (int case_ = 1; case_ < Cases + 1; case_++)
             {
                 // First thing to do is to assemble the resulting lines into a single variable
                 // line 1 contains 
@@ -120,13 +117,13 @@ namespace KickStart
                 int N = Convert.ToInt32(line1[0]); // Number of rows
                 int K = Convert.ToInt32(line1[1]); // Number of plates per stack
                 int P = Convert.ToInt32(line1[2]); // Number of plates required
-                int[,] holder = new int[N,K+1];
+                int[,] holder = new int[N, K + 1];
                 // We dont need to set the first row to 0 as it is 0 by default
                 for (int row = 0; row < N; row++)
                 {
                     // We accept an input and convert the strings to int32 while sorting them with Linq.
                     List<int> input_list = Console.ReadLine().Split(' ').Select(s => Convert.ToInt32(s)).ToList();
-                    for (int col = 1; col < K+1; col++)
+                    for (int col = 1; col < K + 1; col++)
                     {
                         // Create a cumulative sum in that row of the array using the input
                         holder[row, col] = holder[row, col - 1] + input_list[col - 1];
@@ -146,7 +143,7 @@ namespace KickStart
                     max_count = firstRow.Max();
                 }
                 // Other option is that we need to take all of the plates
-                else if (P == N*K)
+                else if (P == N * K)
                 {
                     for (int i = 0; i < N; i++)
                     {
@@ -158,17 +155,23 @@ namespace KickStart
                 else
                 {
                     // We request a list of all possible plate choices
-                    List<int[]> options = PermutationCalculator.Permutations(N, K, P);
+                    string[] options = Permutations(N, K, P);
                     // By using a specific permutations calculator we get a list of integer arrays
                     // Now we want to check all these options and find the largest
                     int score;
-                    for (int instance = 0; instance < options.Count; instance++)
+                    for (int instance = 0; instance < options.Length; instance++)
                     {
-                        int[] key = options[instance];
+                        string key = options[instance];
+                        char[] keyChar = key.ToCharArray();
+                        int[] keyInt = new int[key.Length];
+                        for (int value = 0; value < key.Length; value++)
+                        {
+                            keyInt[value] = keyChar[value] - '0';
+                        }
                         score = 0;
                         for (int sum_index = 0; sum_index < N; sum_index++)
                         {
-                            score += holder[sum_index, key[sum_index]];
+                            score += holder[sum_index, keyInt[sum_index]];
                         }
                         if (score > max_count)
                         {
