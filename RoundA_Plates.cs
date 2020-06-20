@@ -150,6 +150,10 @@ namespace KickStart
                         max_count += holder[i, K];
                     }
                 }
+                else if (N==1)
+                {
+                    max_count += holder[0, K];
+                }
                 // The final case is if we need to choose 2:N*K-1 plates
                 else
                 {
