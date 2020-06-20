@@ -13,7 +13,6 @@ namespace KickStart
         // Storage is the ultimate output vessel
         //static List<int[]> storage = new List<int[]>();
         public static bool checker;
-        public static List<string> tempStorage = new List<string>();
 
         public static string[] Permutations(int stacks, int height, int length)
         {
@@ -49,7 +48,7 @@ namespace KickStart
             checker = true;
             // Just using a list didn't work for some reason so we're gonna use a string array
             Array.Resize(ref storage, storage.Length + 1);
-            storage[storage.Length - 1] = string.Join("", querey);
+            storage[storage.Length - 1] = string.Join(",", querey);
             int indexer = 1;
             while (checker)
             {
@@ -79,10 +78,10 @@ namespace KickStart
         {
             if (k == m)
             {
-                if (Array.IndexOf(storage, string.Join("", input_list)) == -1)
+                if (Array.IndexOf(storage, string.Join(",", input_list)) == -1)
                 {
                     Array.Resize(ref storage, storage.Length + 1);
-                    storage[storage.Length - 1] = string.Join("", input_list);
+                    storage[storage.Length - 1] = string.Join(",", input_list);
                 }
             }
             else
@@ -162,12 +161,7 @@ namespace KickStart
                     for (int instance = 0; instance < options.Length; instance++)
                     {
                         string key = options[instance];
-                        char[] keyChar = key.ToCharArray();
-                        int[] keyInt = new int[key.Length];
-                        for (int value = 0; value < key.Length; value++)
-                        {
-                            keyInt[value] = keyChar[value] - '0';
-                        }
+                        int[] keyInt = key.Split(',').Select(s => Convert.ToInt32(s)).ToArray();
                         score = 0;
                         for (int sum_index = 0; sum_index < N; sum_index++)
                         {
