@@ -2,6 +2,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic; // Allows lists to be used. Important!
 
+
+// This solution works for the first test case but failts with wrong answer for the second. I am unsure why it does this and would expect it to time out for the more challenging cases.
+// I cannot think of an edge case that would cause this that is dependent on the number of notes.
+
 namespace KickStart
 {
     // Then we handle the rest of the logic in a seperate solutions class
