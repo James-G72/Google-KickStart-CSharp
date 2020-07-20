@@ -17,30 +17,19 @@ namespace KickStart
                 int values = Int32.Parse(Console.ReadLine());
                 List<int> input_list = Console.ReadLine().Split(' ').Select(s => Convert.ToInt32(s)).ToList();
                 int records = 0;
-                int record = input_list[0];
-                if (values > 1)
+                int record = 0;
+                for (int checker = 0; checker < values-1; checker++)
                 {
-                    // Looking at the first value
-                    if (input_list[0] > 0 && input_list[0] > input_list[1])
+                    bool test1 = input_list[checker] > record;
+                    bool test2 = input_list[checker] > input_list[checker + 1];
+                    if (test1 && test2)
                     {
                         records++;
                     }
-                    // Looking at all the other values
-                    for (int checker = 1; checker < values - 2; checker++)
-                    {
-                        if (input_list[checker] > record && input_list[checker] > input_list[checker + 1])
-                        {
-                            records++;
-                            record = input_list[checker];
-                        }
-                    }
-                    // Looking at the last value
-                    if (input_list[values - 1] > record)
-                    {
-                        records++;
-                    }
+                    record = Math.Max(record, input_list[checker]);
                 }
-                else if (input_list[0] > 0)
+                // Looking at the last value
+                if (input_list[values - 1] > record)
                 {
                     records++;
                 }
