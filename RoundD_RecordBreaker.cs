@@ -20,7 +20,8 @@ namespace KickStart
                 int record = 0;
                 for (int checker = 0; checker < values-1; checker++)
                 {
-                    bool test1 = input_list[checker] > record;
+                    // Seperating checks out for clarity
+                    bool test1 = checker == 0 || input_list[checker] > record;
                     bool test2 = input_list[checker] > input_list[checker + 1];
                     if (test1 && test2)
                     {
@@ -28,7 +29,7 @@ namespace KickStart
                     }
                     record = Math.Max(record, input_list[checker]);
                 }
-                // Looking at the last value
+                // Looking at the last value as it will go out of range
                 if (input_list[values - 1] > record)
                 {
                     records++;
